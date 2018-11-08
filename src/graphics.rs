@@ -5,6 +5,8 @@ use std::sync::Mutex;
 use std::sync::Arc;
 use self::sdl2::pixels::Color;
 use self::sdl2::event::Event;
+use self::sdl2::video::Window;
+use self::sdl2::render::Canvas;
 
 pub fn run(board: Arc<Mutex<Board>>) {
     let sdl_context = sdl2::init().unwrap();
@@ -29,12 +31,13 @@ pub fn run(board: Arc<Mutex<Board>>) {
             }
         }
 
-        update_game(Arc::clone(&board));
+        update_game(Arc::clone(&board), &mut canvas);
 
         canvas.present();
     }
 }
 
-fn update_game(board: Arc<Mutex<Board>>) {
-
+fn update_game(board: Arc<Mutex<Board>>, canvas: &mut Canvas<Window>) {
+    let board = board.lock().unwrap();
+    
 }
