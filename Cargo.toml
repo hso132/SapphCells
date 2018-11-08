@@ -1,0 +1,8 @@
+[package]
+name = "sapphcells"
+version = "0.1.0"
+authors = ["Haley Owsianko <haley.owsianko@gmail.com>"]
+
+[dependencies]
+sdl2 = "0.31"
+itertools = "0.7.8"
