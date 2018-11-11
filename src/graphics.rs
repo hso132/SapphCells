@@ -1,26 +1,18 @@
-extern crate sdl2;
+extern crate sfml;
+extern crate rand;
 
-use data::Board;
+use data::*;
 use std::sync::Mutex;
 use std::sync::Arc;
-use self::sdl2::pixels::Color;
-use self::sdl2::event::Event;
-use self::sdl2::video::Window;
-use self::sdl2::render::Canvas;
+
 
 pub fn run(board: Arc<Mutex<Board>>) {
-    let sdl_context = sdl2::init().unwrap();
-    let video_subsystem = sdl_context.video().unwrap();
 
-    let window = video_subsystem.window("Sapphie's Cells", 500,500)
-        .build()
-        .unwrap();
+    let mut window = RenderWindow::new((500,500), "Sapphie's Cells", Style::CLOSE, &Default::default());
 
     let mut canvas = window.into_canvas().build().unwrap();
 
-    canvas.set_draw_color(Color::RGB(0,255,255));
-    canvas.clear();
-    canvas.present();
+
 
     let mut event_pump = sdl_context.event_pump().unwrap();
     'run: loop {
@@ -32,12 +24,39 @@ pub fn run(board: Arc<Mutex<Board>>) {
         }
 
         update_game(Arc::clone(&board), &mut canvas);
-
-        canvas.present();
     }
 }
 
-fn update_game(board: Arc<Mutex<Board>>, canvas: &mut Canvas<Window>) {
+fn update_game(board: Arc<Mutex<Board>>, canvas: &mut RenderTarget) {
     let board = board.lock().unwrap();
-    
+    canvas.set_draw_color(Color::RGB(0,0,0));
+    canvas.clear();
+    let (width, height) = canvas.output_size().unwrap();   
+    let (cell_width, cell_height) = (width/board.width(), height/board.height()); 
+    for y in 0..board.height() {
+        for x in 0..board.width() {
+            let tile = board.tile_at(x,y);
+            let color = tile_color(tile);
+
+            canvas.set_draw_color(color);
+            canvas.fill_rect(Some(Rect::new((x*cell_width) as i32,(y*cell_height) as i32,cell_width,cell_height))).unwrap();
+        }
+    }
+
+    canvas.present();
+}
+fn tile_color(t: Tile) -> Color {
+    match t {
+        Tile::Cell(_) => Color::RGB(200,0,0),
+        Tile::Empty => Color::RGB(50,50,50),
+        Tile::FoodSource(_) => Color::RGB(0,0,200),
+        _ => random_color(),
+    }
+}
+fn random_color() -> Color {
+    Color::RGB(
+        rand::random(),
+        rand::random(),
+        rand::random()
+    )
 }
