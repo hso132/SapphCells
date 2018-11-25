@@ -4,6 +4,9 @@ use sapphcells::graphics;
 use sapphcells::data::*;
 use std::sync::{Mutex,Arc};
 fn main() {
-    let b = Arc::new(Mutex::new(Board::new(490,500,&BadRandomTerrain::new())));
-    graphics::run(b);
+    let width = 250;
+    let height = 250;
+    let strat = RandomTerrain::new(3, 0.01, width, height).unwrap();
+    let b = Arc::new(Mutex::new(Board::new(width,height,&strat)));
+    graphics::run(b, 1000, 1000);
 }
